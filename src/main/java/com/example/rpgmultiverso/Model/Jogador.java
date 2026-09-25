@@ -4,9 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id; 
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull; 
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,12 +16,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity 
-@Table(name ="jogador")
+@Table(name = "jogador")
 @Getter
 @Setter 
 @NoArgsConstructor
 @AllArgsConstructor
 public class Jogador {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,10 +37,14 @@ public class Jogador {
     @Column(nullable = false, length = 30)
     private String apelido;
 
-    @NotBlank(message="A geração do jogador")
-    @Column (nullable=false , length=30)
-    private int geracao;
+   
+    @NotNull(message = "A geração do jogador é obrigatória")
+    @Min(value = 0, message = "A geração não pode ser negativa")
+    @Column(nullable = false)
+    private Integer geracao; 
 
+
+    @NotNull(message = "O nível é obrigatório")
     @Min(value = 1, message = "O nível mínimo é 1")
     @Column(nullable = false)
     private Integer nivel = 1; 
