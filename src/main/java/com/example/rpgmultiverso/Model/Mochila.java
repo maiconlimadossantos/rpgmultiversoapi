@@ -1,6 +1,16 @@
 package com.example.rpgmultiverso.Model;
-import jakarta.persistence.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,43 +19,45 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item;
-
-import java.util.ArrayList;
-
 @Entity 
-@Table (name = "mochila")
+@Table(name = "mochila")
 @Data 
-
-
+@NoArgsConstructor
+@AllArgsConstructor
 public class Mochila {
+
     @Id 
-    @GeneratedValue (strategy = GenerationType.IDENTITY )
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     
-    @NotBlank (message = "")
-    @Size (min= ,max=, message="")
-    @Column()
+    @NotBlank(message = "O nome do dono é obrigatório")
+    @Size(min = 3, max = 60, message = "O nome deve possuir entre 3 e 60 caracteres")
+    @Column(nullable = false, length = 60)
     private String nomeDono;
 
-    @NotBlank (message = "")
-    @Size (min= ,max=, message="")
-    @Column()
-    private double capacidadeMaximaPeso;
+    
+    @NotNull(message = "A capacidade máxima de peso é obrigatória")
+    @Min(value = 0, message = "A capacidade não pode ser negativa")
+    @Column(nullable = false)
+    private Double capacidadeMaximaPeso;
 
     @OneToMany (mappedBy = "mochila",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Item> itens=new ArrayList<>();
+    //private List<Item> itens=new ArrayList<>();
 
-    public  double getPesoAtual(){
-        return itens.stream().mapToDouble(Item->itens.getPeso()*item.getQuantidade()).sum();
-    }
+    //public  double getPesoAtual(){
+     //   return itens.stream().mapToDouble(Item->itens.getPeso()*item.getQuantidade()).sum();
+   // }
     
 
-    public boolean adicionarItem(Item item) {
-        if(getPesoAtual() +(item.getPeso))
-    }
+    //public boolean adicionarItem(Item item) {
+       /// if(getPesoAtual() +(item.getPeso* item.getQuantidade()) <= capacidadeMaximaPeso){
+        //    itens.add(item);
+         //   item.setMochila(this);
+        //    return true;
+   // }
 
 
     
