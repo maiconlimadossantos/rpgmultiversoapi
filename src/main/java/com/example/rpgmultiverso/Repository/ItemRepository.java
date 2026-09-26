@@ -1,11 +1,10 @@
 package com.example.rpgmultiverso.Repository;
 
+import com.example.rpgmultiverso.Model.Itens;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.rpgmultiverso.Model.Mochila;
 import org.springframework.stereotype.Repository;
 
-@Repository 
-public interface MochilaRepository extends JpaRepository<Mochila, Long> {
-    
+@Repository
+public interface ItemRepository extends JpaRepository<Itens, Long> {
 
 }

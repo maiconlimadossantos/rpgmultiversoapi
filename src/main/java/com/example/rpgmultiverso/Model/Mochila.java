@@ -13,7 +13,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,9 +23,8 @@ import java.util.List;
 
 @Entity 
 @Table(name = "mochila")
-@Data 
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor 
+@AllArgsConstructor 
 public class Mochila {
 
     @Id 
@@ -44,7 +42,7 @@ public class Mochila {
     @Column(nullable = false)
     private Double capacidadeMaximaPeso;
 
-    @OneToMany (mappedBy = "mochila",cascade = CascadeType.ALL, orphanRemoval = true)
+    //@OneToMany (mappedBy = "mochila",cascade = CascadeType.ALL, orphanRemoval = true)
     //private List<Item> itens=new ArrayList<>();
 
     //public  double getPesoAtual(){
