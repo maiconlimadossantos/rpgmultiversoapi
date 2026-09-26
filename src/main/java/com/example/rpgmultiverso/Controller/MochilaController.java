@@ -18,6 +18,11 @@ public class MochilaController {
     @Autowired 
     private ItemRepository itemRepository;
 
+public MochilaController(MochilaRepository mochilaRepository, ItemRepository itemRepository) {
+    this.mochilaRepository = mochilaRepository;
+    this.itemRepository = itemRepository;
+}
+
 @GetMapping
 public List<Mochila> listartodos(){
     
