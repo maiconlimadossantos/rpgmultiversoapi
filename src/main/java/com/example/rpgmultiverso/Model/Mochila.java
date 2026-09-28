@@ -17,12 +17,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity 
 @Table(name = "mochila")
+@Getter
+@Setter
 @NoArgsConstructor 
 @AllArgsConstructor 
 public class Mochila {
@@ -36,27 +37,28 @@ public class Mochila {
     @Column(nullable = false, length = 60)
     private String nomeDono;
 
-    
     @NotNull(message = "A capacidade máxima de peso é obrigatória")
-    @Min(value = 0, message = "A capacidade não pode ser negativa")
+    @Min(value = 0, message = "O peso mínimo não pode ser negativo")
     @Column(nullable = false)
     private Double capacidadeMaximaPeso;
 
-    //@OneToMany (mappedBy = "mochila",cascade = CascadeType.ALL, orphanRemoval = true)
-    //private List<Item> itens=new ArrayList<>();
+    @OneToMany(mappedBy = "mochila", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Itens> itens = new ArrayList<>();
 
-    //public  double getPesoAtual(){
-     //   return itens.stream().mapToDouble(Item->itens.getPeso()*item.getQuantidade()).sum();
-   // }
-    
+    // [CORREÇÃO] Substituído "itens.getPeso()" por "item.getPeso()" no parâmetro da lambda
+    public double getPesoAtual() {
+        return itens.stream()
+                    .mapToDouble(item -> item.getPeso() * item.getQuantidade())
+                    .sum();
+    }
 
-    //public boolean adicionarItem(Item item) {
-       /// if(getPesoAtual() +(item.getPeso* item.getQuantidade()) <= capacidadeMaximaPeso){
-        //    itens.add(item);
-         //   item.setMochila(this);
-        //    return true;
-   // }
-
-
-    
+    // [CORREÇÃO] Corrigido "item.getPeso" para "item.getPeso()" e adicionadas as chaves que faltavam no método e no if
+    public boolean adicionarItem(Itens item) {
+        if (getPesoAtual() + (item.getPeso() * item.getQuantidade()) <= capacidadeMaximaPeso) {
+            itens.add(item);
+            item.setMochila(this);
+            return true;
+        }
+        return false;
+    }
 }
