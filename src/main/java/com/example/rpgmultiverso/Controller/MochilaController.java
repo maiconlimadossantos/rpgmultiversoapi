@@ -1,43 +1,43 @@
 package com.example.rpgmultiverso.Controller;
 
-import com.example.rpgmultiverso.Model.Itens;
 import com.example.rpgmultiverso.Model.Mochila;
 import com.example.rpgmultiverso.Repository.ItemRepository;
 import com.example.rpgmultiverso.Repository.MochilaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@Service 
+
+@RestController 
+@RequestMapping("/mochila") 
 public class MochilaController {
-    @Autowired 
-    private  MochilaRepository mochilaRepository;
 
-    @Autowired 
-    private ItemRepository itemRepository;
+    private final MochilaRepository mochilaRepository;
+    private final ItemRepository itemRepository;
 
-public MochilaController(MochilaRepository mochilaRepository, ItemRepository itemRepository) {
-    this.mochilaRepository = mochilaRepository;
-    this.itemRepository = itemRepository;
+    // Injeção de dependência via construtor (A anotação @Autowired é opcional aqui)
+    public MochilaController(MochilaRepository mochilaRepository, ItemRepository itemRepository) {
+        this.mochilaRepository = mochilaRepository;
+        this.itemRepository = itemRepository;
+    }
+
+    @GetMapping
+    public List<Mochila> listarTodos() {
+        return mochilaRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Mochila> buscarPorId(@PathVariable Long id) { // [CORREÇÃO] Adicionado @PathVariable para capturar o ID da URL
+        return mochilaRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @PostMapping
+    public ResponseEntity<Mochila> salvar(@RequestBody @Valid Mochila mochila) { // [CORREÇÃO] Adicionado @RequestBody e @Valid para receber o JSON e validar os dados
+        Mochila novaMochila = mochilaRepository.save(mochila);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novaMochila);
+    }
 }
-
-@GetMapping
-public List<Mochila> listartodos(){
-    
-    return mochilaRepository.findAll();
-}
-
-@GetMapping("/{id}")
-public Mochila buscarPorId(Long id){
-    return mochilaRepository.findById(id).orElse(null);
-}
-
-@PostMapping
-public Mochila salvar(Mochila mochila){
-    return mochilaRepository.save(mochila);
-}
-
-}
-
