@@ -1,4 +1,4 @@
-ppackage com.example.rpgmultiverso.Model;
+package com.example.rpgmultiverso.Model;
 
 import jakarta.persistence.CascadeType; // [CORREÇÃO] Importação do CascadeType que estava faltando
 import jakarta.persistence.Column;
@@ -21,9 +21,10 @@ import lombok.Setter;
 @Entity 
 @Table(name = "jogador")
 @Getter
-@Setter 
-@NoArgsConstructor
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+
 public class Jogador {
 
     @Id
