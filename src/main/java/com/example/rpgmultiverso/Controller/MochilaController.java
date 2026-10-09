@@ -22,6 +22,7 @@ public class MochilaController {
         this.mochilaRepository = mochilaRepository;
         this.itemRepository = itemRepository;
     }
+   
 
     @GetMapping
     public List<Mochila> listarTodos() {
