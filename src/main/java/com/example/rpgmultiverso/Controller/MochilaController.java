@@ -1,9 +1,9 @@
 package com.example.rpgmultiverso.Controller;
 
 import com.example.rpgmultiverso.Model.Mochila;
-import com.example.rpgmultiverso.Repository.ItemRepository;
+
 import com.example.rpgmultiverso.Repository.MochilaRepository;
-import jakarta.validation.Valid;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
