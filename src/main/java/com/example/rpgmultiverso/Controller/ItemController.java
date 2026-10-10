@@ -1,6 +1,6 @@
 package com.example.rpgmultiverso.Controller;
 
-import com.example.rpgmultiverso.Model.Itens;
+import com.example.rpgmultiverso.Model.Item;
 import com.example.rpgmultiverso.Repository.ItemRepository;
 import com.example.rpgmultiverso.Repository.MochilaRepository;
 
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/itens")
+@RequestMapping("/item")
 public class ItemController {
 
     private final ItemRepository itemRepository;
@@ -28,13 +28,13 @@ public class ItemController {
 
     // Listar todos os itens
     @GetMapping
-    public List<Itens> listarTodos() {
+    public List<Item> listarTodos() {
         return itemRepository.findAll();
     }
 
     // Buscar item por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Itens> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Item> buscarPorId(@PathVariable Long id) {
         return itemRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -42,19 +42,19 @@ public class ItemController {
 
     // Cadastrar novo item
     @PostMapping
-    public ResponseEntity<Itens> criar(@RequestBody @Valid Itens item) {
-        Itens novoItem = itemRepository.save(item);
+    public ResponseEntity<Item> criar(@RequestBody @Valid Item item) {
+        Item novoItem = itemRepository.save(item);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoItem);
     }
 
     // Atualizar item existente
     @PutMapping("/{id}")
-    public ResponseEntity<Itens> atualizar(@PathVariable Long id, @RequestBody @Valid Itens itemAtualizado) {
+    public ResponseEntity<Item> atualizar(@PathVariable Long id, @RequestBody @Valid Item itemAtualizado) {
         if (!itemRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
         itemAtualizado.setId(id);
-        Itens itemSalvo = itemRepository.save(itemAtualizado);
+        Item itemSalvo = itemRepository.save(itemAtualizado);
         return ResponseEntity.ok(itemSalvo);
     }
 
@@ -69,7 +69,7 @@ public class ItemController {
     }
 
      @PutMapping("/{itemId}/mochila/{mochilaId}")
-    public ResponseEntity<Itens> adicionarMochila(
+    public ResponseEntity<Item> adicionarMochila(
             @PathVariable Long itemId,
             @PathVariable Long mochilaId) {
 
@@ -83,7 +83,7 @@ public class ItemController {
 
         item.get().setMochila(mochila.get());
 
-        Itens atualizado = itemRepository.save(item.get());
+        Item atualizado = itemRepository.save(item.get());
 
         return ResponseEntity.ok(atualizado);
     }

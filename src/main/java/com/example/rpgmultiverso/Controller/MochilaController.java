@@ -17,12 +17,12 @@ import java.util.List;
 public class MochilaController {
 
     private final MochilaRepository mochilaRepository;
-    private final ItemRepository itemRepository;
+
 
     // Injeção de dependência via construtor (A anotação @Autowired é opcional aqui)
-    public MochilaController(MochilaRepository mochilaRepository, ItemRepository itemRepository) {
+    public MochilaController(MochilaRepository mochilaRepository) {
         this.mochilaRepository = mochilaRepository;
-        this.itemRepository = itemRepository;
+       
     }
    
 
@@ -39,9 +39,16 @@ public class MochilaController {
     }
 
     @PostMapping
-    public ResponseEntity<Mochila> salvar(@RequestBody @Valid Mochila mochila) { // [CORREÇÃO] Adicionado @RequestBody e @Valid para receber o JSON e validar os dados
-        Mochila novaMochila = mochilaRepository.save(mochila);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novaMochila);
+    public ResponseEntity<Mochila> cadastrar(
+            @RequestBody Mochila mochila) {
+
+        mochila.setId(null);
+
+        Mochila salva = mochilaRepository.save(mochila);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(salva);
     }
 
   

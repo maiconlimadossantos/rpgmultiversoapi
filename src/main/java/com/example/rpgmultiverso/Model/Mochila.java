@@ -42,23 +42,23 @@ public class Mochila {
     @Column(nullable = false)
     private Double capacidadeMaximaPeso;
 
-    @OneToMany(mappedBy = "mochila", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Itens> itens = new ArrayList<>();
+    @OneToMany(mappedBy = "mochila")
+    private List<Item> itens = new ArrayList<Item>();
 
     // [CORREÇÃO] Substituído "itens.getPeso()" por "item.getPeso()" no parâmetro da lambda
-    public double getPesoAtual() {
-        return itens.stream()
-                    .mapToDouble(item -> item.getPeso() * item.getQuantidade())
-                    .sum();
-    }
+    //public double getPesoAtual() {
+        //return itens.stream()
+                    //.mapToDouble(item -> item.getPeso() * item.getQuantidade())
+                   // .sum();
+   // }
 
     // [CORREÇÃO] Corrigido "item.getPeso" para "item.getPeso()" e adicionadas as chaves que faltavam no método e no if
-    public boolean adicionarItem(Itens item) {
-        if (getPesoAtual() + (item.getPeso() * item.getQuantidade()) <= capacidadeMaximaPeso) {
-            itens.add(item);
-            item.setMochila(this);
-            return true;
-        }
-        return false;
-    }
+    //public boolean adicionarItem(Item item) {
+        //if (getPesoAtual() + (item.getPeso() * item.getQuantidade()) <= capacidadeMaximaPeso) {
+            //itens.add(item);
+           // item.setMochila(this);
+           // return true;
+      //  }
+       // return false;
+  //  }
 }
