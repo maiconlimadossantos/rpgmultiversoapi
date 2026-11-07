@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script src="/Bibliteocas/react.development.js"></script>
+    <script src="/Bibliteocas/react-dom.development.js"></script>
+    <script src="/Bibliteocas/babel.min.js"></script>
+    <script type="text/babel" src="/Bibliteocas/index.js">
+        function App() {
+            return (
+                <div>
+                    <h1>Hello, React!</h1>
+                </div>
+            );
+            function criarJogador() {
+                const nome = prompt("Digite o nome do jogador:");
+                const apelido= prompt("Digite o apelido do jogador:");
+                const geracao = prompt("Digite a geração do jogador:");
+                const nivel = prompt("Digite o nível do jogador:");
+                const jogador = {
+                    nome: nome,
+                    apelido: apelido,
+                    geracao: geracao,
+                    nivel: nivel
+                };
+               function salvarJogador(jogador) {
+                    let jogadores = JSON.parse(localStorage.getItem("jogadores")) || [];
+                    jogadores.push(jogador);
+                    localStorage.setItem("jogadores", JSON.stringify(jogadores));
+                }
+                salvarJogador(jogador);
+            }
+            function listarJogadores() {
+                const jogadores = JSON.parse(localStorage.getItem("jogadores")) || [];
+                if (jogadores.length === 0) {
+                    alert("Nenhum jogador cadastrado.");
+                } else {
+                    let lista = "Jogadores cadastrados:\n";
+                    jogadores.forEach((jogador, index) => {
+                        lista += `${index + 1}. Nome: ${jogador.nome}, Apelido: ${jogador.apelido}, Geração: ${jogador.geracao}, Nível: ${jogador.nivel}\n`;
+                    });
+                    alert(lista);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
