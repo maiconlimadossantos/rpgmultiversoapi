@@ -54,4 +54,40 @@ public class Jogador {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "mochila_id", referencedColumnName = "id")
     private Mochila mochila;
+
+    @OneToOne (cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn (name = "habilidade_id", referencedColumnName = "id")
+    private Habilidade habilidade;
+
+    public void gerarHabilidadePorGeracao() {
+        if (this.geracao == null) return;
+
+        Habilidade novaHabilidade = new Habilidade();
+        
+        switch (this.geracao) {
+            case 1:
+                novaHabilidade.setNome("Instinto de Sobrevivência");
+                novaHabilidade.setDescricao("Habilidade básica voltada para resistir aos perigos primitivos.");
+                novaHabilidade.setTipo("Sobrevivência");
+                break;
+            case 2:
+                novaHabilidade.setNome("Domínio de Classe");
+                novaHabilidade.setDescricao("Habilidade especializada focada nas características da sua classe escolhida.");
+                novaHabilidade.setTipo("Classe");
+                break;
+            case 3:
+                novaHabilidade.setNome("Herança de Clã");
+                novaHabilidade.setDescricao("Poder ancestral herdado diretamente das tradições do seu clã.");
+                novaHabilidade.setTipo("Clã");
+                break;
+            default:
+                novaHabilidade.setNome("Habilidade Genérica");
+                novaHabilidade.setDescricao("Uma habilidade adaptada para gerações avançadas.");
+                novaHabilidade.setTipo("Especial");
+                break;
+        }
+        
+        this.habilidade = novaHabilidade;
+    }
+
 }
