@@ -3,56 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Click do Conhecimento - RPG Multiverso</title>
+    <style>
+        body {
+            background: #f3f7fa;
+            color: #243949;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        .painel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 22px rgba(23, 61, 88, 0.1);
+            margin: 50px auto;
+            max-width: 680px;
+            padding: 28px;
+        }
+        h1 { color: #173d58; margin-bottom: 4px; }
+        .subtitulo { color: #697782; margin-top: 0; }
+        label { display: block; margin-top: 12px; }
+        input {
+            box-sizing: border-box;
+            display: block;
+            margin-top: 4px;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background: #2b7fb1;
+            border: 0;
+            border-radius: 7px;
+            color: white;
+            cursor: pointer;
+            margin: 12px 8px 0 0;
+            padding: 10px 14px;
+        }
+        button:disabled { opacity: .5; cursor: wait; }
+        ul { padding-left: 20px; }
+        li { margin: 12px 0; }
+        .detalhes { display: block; color: #697782; font-size: .9rem; }
+        .mensagem { color: #9d3a28; font-weight: bold; }
+        @media (max-width: 720px) {
+            .painel { margin: 12px; padding: 18px; }
+        }
+    </style>
 </head>
 <body>
     <div id="root"></div>
-    <script src="/Bibliteocas/react.development.js"></script>
-    <script src="/Bibliteocas/react-dom.development.js"></script>
-    <script src="/Bibliteocas/babel.min.js"></script>
-    <script type="text/babel" src="/Bibliteocas/index.js">
+
+    <!-- Bibliotecas React, ReactDOM e Babel locais ou via CDN -->
+    <script src="/bibliotecas/react.development.js"></script>
+    <script src="/bibliotecas/react-dom.development.js"></script>
+    <script src="/bibliotecas/babel.min.js"></script>
+
+    <script type="text/babel" data-presets="react">
+        const { useState } = React;
+
         function App() {
-            return (
-                <div>
-                    <h1>Hello, React!</h1>
-                </div>
-            );
-            function criarJogador() {
-                const nome = prompt("Digite o nome do jogador:");
-                const apelido= prompt("Digite o apelido do jogador:");
-                const geracao = prompt("Digite a geração do jogador:");
-                const nivel = prompt("Digite o nível do jogador:");
-                const jogador = {
-                    nome: nome,
-                    apelido: apelido,
-                    geracao: geracao,
-                    nivel: nivel
-                };
-               function salvarJogador(jogador) {
-                    let jogadores = JSON.parse(localStorage.getItem("jogadores")) || [];
-                    jogadores.push(jogador);
-                    localStorage.setItem("jogadores", JSON.stringify(jogadores));
-                }
-                salvarJogador(jogador);
-            }
-            function listarJogadores() {
-                const jogadores = JSON.parse(localStorage.getItem("jogadores")) || [];
-                if (jogadores.length === 0) {
-                    alert("Nenhum jogador cadastrado.");
-                } else {
-                    let lista = "Jogadores cadastrados:\n";
-                    jogadores.forEach((jogador, index) => {
-                        lista += `${index + 1}. Nome: ${jogador.nome}, Apelido: ${jogador.apelido}, Geração: ${jogador.geracao}, Nível: ${jogador.nivel}\n`;
+            const [usuario, setUsuario] = useState("");
+            const [senha, setSenha] = useState("");
+            const [autorizacao, setAutorizacao] = useState("");
+            const [jogadores, setJogadores] = useState([]);
+            const [mensagem, setMensagem] = useState("");
+            const [carregando, setCarregando] = useState(false);
+
+            async function consultar(cabecalho) {
+                setCarregando(true);
+                setMensagem("Consultando a API...");
+
+                try {
+                    const resposta = await fetch("/jogadores", {
+                        headers: {
+                            Authorization: cabecalho,
+                            Accept: "application/json",
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
                     });
-                    alert(lista);
+
+                    if (resposta.status === 401) {
+                        setMensagem("Usuário ou senha incorretos.");
+                        setJogadores([]);
+                        return false;
+                    }
+
+                    if (!resposta.ok) {
+                        setMensagem("Erro HTTP " + resposta.status);
+                        return false;
+                    }
+
+                    const dados = await resposta.json();
+                    setJogadores(dados);
+                    setMensagem("");
+                    return true;
+                } catch (erro) {
+                    setMensagem("Não foi possível acessar a API.");
+                    return false;
+                } finally {
+                    setCarregando(false);
                 }
             }
-            function excluirJogador(){
-                <form onSubmit="excluirJogador()">
-                   
-                    </form>
+
+            async function entrar(evento) {
+                evento.preventDefault();
+                if (!usuario || !senha) {
+                    setMensagem("Preencha usuário e senha.");
+                    return;
+                }
+
+                const cabecalho = "Basic " + btoa(usuario + ":" + senha);
+                const sucesso = await consultar(cabecalho);
+
+                if (sucesso) {
+                    setAutorizacao(cabecalho);
+                    setSenha("");
+                }
             }
+
+            function sair() {
+                setAutorizacao("");
+                setUsuario("");
+                setSenha("");
+                setJogadores([]);
+                setMensagem("");
+            }
+
+            return (
+                <main className="painel">
+                    <h1>Click do Conhecimento</h1>
+                    <p className="subtitulo">React + API Spring Boot (RPG Multiverso)</p>
+
+                    {!autorizacao ? (
+                        <form onSubmit={entrar}>
+                            <label>Usuário
+                                <input value={usuario}
+                                    onChange={e => setUsuario(e.target.value)}
+                                    autoComplete="username" />
+                            </label>
+
+                            <label>Senha
+                                <input type="password" value={senha}
+                                    onChange={e => setSenha(e.target.value)}
+                                    autoComplete="current-password" />
+                            </label>
+                            <button disabled={carregando} type="submit">Entrar</button>
+                        </form>
+                    ) : (
+                        <section>
+                            <h2>Jogadores cadastrados</h2>
+                            <button disabled={carregando}
+                                onClick={() => consultar(autorizacao)}>
+                                Atualizar lista
+                            </button>
+                            <button onClick={sair}>Sair da tela</button>
+
+                            {jogadores.length === 0 ? (
+                                <p>Nenhum jogador encontrado.</p>
+                            ) : (
+                                <ul>
+                                    {jogadores.map(jogador => (
+                                        <li key={jogador.id}>
+                                            <strong>{jogador.nome}</strong> ({jogador.apelido})
+                                            <span className="detalhes">
+                                                Geração: {jogador.geracao} · Nível: {jogador.nivel}
+                                            </span>
+                                            {jogador.habilidade && (
+                                                <span className="detalhes" style={{ color: "#2b7fb1" }}>
+                                                    Habilidade [{jogador.habilidade.tipo}]: {jogador.habilidade.nome} - {jogador.habilidade.descricao}
+                                                </span>
+                                            )}
+                                            <span className="detalhes">
+                                                {jogador.mochila
+                                                    ? "Mochila: " + jogador.mochila.nomeDono + " (Capacidade: " + jogador.mochila.capacidadeMaximaPeso + "kg)"
+                                                    : "Sem mochila vinculada"}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </section>
+                    )}
+                    {mensagem && <p className="mensagem">{mensagem}</p>}
+                </main>
+            );
         }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<App />);
     </script>
 </body>
 </html>
