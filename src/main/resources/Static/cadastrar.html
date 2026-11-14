@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Jogador - RPG Multiverso</title>
+    <style>
+        body {
+            background: linear-gradient(rgba(10, 15, 30, 0.75), rgba(10, 15, 30, 0.90)), 
+                        url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            color: #e2e8f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .painel {
+            background: rgba(255, 255, 255, 0.96);
+            color: #243949;
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 500px;
+            padding: 32px;
+            box-sizing: border-box;
+        }
+        h1 { color: #173d58; margin-bottom: 4px; }
+        .subtitulo { color: #697782; margin-top: 0; margin-bottom: 20px; }
+        label { display: block; margin-top: 12px; font-weight: bold; font-size: 0.9rem; }
+        input, select {
+            box-sizing: border-box;
+            display: block;
+            margin-top: 4px;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background: #2b7fb1;
+            border: 0;
+            border-radius: 7px;
+            color: white;
+            cursor: pointer;
+            margin-top: 18px;
+            padding: 12px;
+            font-weight: bold;
+            width: 100%;
+            font-size: 1rem;
+        }
+        button:hover { background: #1f5d84; }
+        .mensagem { margin-top: 12px; font-weight: bold; text-align: center; }
+        .sucesso { color: #166534; }
+        .erro { color: #9d3a28; }
+        .voltar { display: block; text-align: center; margin-top: 15px; color: #2b7fb1; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="/bibliotecas/react.development.js"></script>
+    <script src="/bibliotecas/react-dom.development.js"></script>
+    <script src="/bibliotecas/babel.min.js"></script>
+
+    <script type="text/babel" data-presets="react">
+        const { useState } = React;
+
+        function CadastrarApp() {
+            const [nome, setNome] = useState("");
+            const [apelido, setApelido] = useState("");
+            const [geracao, setGeracao] = useState("1");
+            const [nivel, setNivel] = useState("1");
+            const [usuario, setUsuario] = useState("");
+            const [senha, setSenha] = useState("");
+            const [mensagem, setMensagem] = useState("");
+            const [tipoMsg, setTipoMsg] = useState("");
+            const [carregando, setCarregando] = useState(false);
+
+            async function handleSubmit(e) {
+                e.preventDefault();
+                if (!nome || !apelido || !usuario || !senha) {
+                    setMensagem("Preencha todos os campos obrigatórios e de autenticação.");
+                    setTipoMsg("erro");
+                    return;
+                }
+
+                setCarregando(true);
+                setMensagem("Cadastrando jogador...");
+                setTipoMsg("");
+
+                const novoJogador = {
+                    nome,
+                    apelido,
+                    geracao: parseInt(geracao),
+                    nivel: parseInt(nivel)
+                };
+
+                try {
+                    const resposta = await fetch("/jogadores", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Basic " + btoa(usuario + ":" + senha)
+                        },
+                        body: JSON.stringify(novoJogador)
+                    });
+
+                    if (resposta.status === 401) {
+                        setMensagem("Falha na autenticação: Usuário ou senha inválidos.");
+                        setTipoMsg("erro");
+                        return;
+                    }
+
+                    if (!resposta.ok) {
+                        throw new Error("Erro ao salvar jogador.");
+                    }
+
+                    setMensagem("Jogador cadastrado com sucesso! Habilidade gerada por geração.");
+                    setTipoMsg("sucesso");
+                    setNome("");
+                    setApelido("");
+                } catch (err) {
+                    setMensagem("Não foi possível conectar à API ou salvar.");
+                    setTipoMsg("erro");
+                } finally {
+                    setCarregando(false);
+                }
+            }
+
+            return (
+                <main className="painel">
+                    <h1>Novo Jogador</h1>
+                    <p className="subtitulo">Cadastre um herói no Multiverso</p>
+                    
+                    <form onSubmit={handleSubmit}>
+                        <label>Nome do Jogador
+                            <input value={nome} onChange={e => setNome(e.target.value)} placeholder="Ex: Arthur Pendragon" />
+                        </label>
+
+                        <label>Apelido
+                            <input value={apelido} onChange={e => setApelido(e.target.value)} placeholder="Ex: O Rei" />
+                        </label>
+
+                        <label>Geração (1: Sobrevivência | 2: Classe | 3: Clã)
+                            <select value={geracao} onChange={e => setGeracao(e.target.value)}>
+                                <option value="1">1ª Geração (Sobrevivência)</option>
+                                <option value="2">2ª Geração (Classe)</option>
+                                <option value="3">3ª Geração (Clã)</option>
+                            </select>
+                        </label>
+
+                        <label>Nível Inicial
+                            <input type="number" min="1" value={nivel} onChange={e => setNivel(e.target.value)} />
+                        </label>
+
+                        <hr style={{margin: "20px 0", border: "0", borderTop: "1px solid #ddd"}}/>
+
+                        <label>Usuário da API (Admin/User)
+                            <input value={usuario} onChange={e => setUsuario(e.target.value)} autoComplete="username" />
+                        </label>
+
+                        <label>Senha da API
+                            <input type="password" value={senha} onChange={e => setSenha(e.target.value)} autoComplete="current-password" />
+                        </label>
+
+                        <button disabled={carregando} type="submit">
+                            {carregando ? "Salvando..." : "Salvar Jogador"}
+                        </button>
+                    </form>
+
+                    {mensagem && <p className={`mensagem ${tipoMsg}`}>{mensagem}</p>}
+                    <a className="voltar" href="/">← Voltar para a lista</a>
+                </main>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<CadastrarApp />);
+    </script>
+</body>
+</html>

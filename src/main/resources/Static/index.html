@@ -6,22 +6,33 @@
     <title>Click do jogador - RPG Multiverso</title>
     <style>
         body {
-            background: #f3f7fa;
-            color: #243949;
+            /* Fundo com a imagem da Yggdrasil e um gradiente escuro profissional para destacar o painel */
+            background: linear-gradient(rgba(10, 15, 30, 0.75), rgba(10, 15, 30, 0.90)), 
+                        url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            color: #e2e8f0;
             font-family: Arial, sans-serif;
             margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .painel {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 22px rgba(23, 61, 88, 0.1);
-            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.96);
+            color: #243949;
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            width: 100%;
             max-width: 680px;
-            padding: 28px;
+            padding: 32px;
+            box-sizing: border-box;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         h1 { color: #173d58; margin-bottom: 4px; }
         .subtitulo { color: #697782; margin-top: 0; }
-        label { display: block; margin-top: 12px; }
+        label { display: block; margin-top: 12px; font-weight: bold; }
         input {
             box-sizing: border-box;
             display: block;
@@ -30,6 +41,7 @@
             width: 100%;
             border: 1px solid #ccc;
             border-radius: 4px;
+            font-size: 1rem;
         }
         button {
             background: #2b7fb1;
@@ -38,13 +50,25 @@
             color: white;
             cursor: pointer;
             margin: 12px 8px 0 0;
-            padding: 10px 14px;
+            padding: 10px 16px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #1f5d84;
         }
         button:disabled { opacity: .5; cursor: wait; }
         ul { padding-left: 20px; }
-        li { margin: 12px 0; }
-        .detalhes { display: block; color: #697782; font-size: .9rem; }
-        .mensagem { color: #9d3a28; font-weight: bold; }
+        li { 
+            margin: 14px 0; 
+            background: #f8fafc; 
+            padding: 12px; 
+            border-radius: 6px; 
+            border-left: 4px solid #2b7fb1; 
+            list-style: none;
+        }
+        .detalhes { display: block; color: #475569; font-size: 0.9rem; margin-top: 3px; }
+        .mensagem { color: #9d3a28; font-weight: bold; margin-top: 10px; }
         @media (max-width: 720px) {
             .painel { margin: 12px; padding: 18px; }
         }
@@ -169,7 +193,7 @@
                                                 Geração: {jogador.geracao} · Nível: {jogador.nivel}
                                             </span>
                                             {jogador.habilidade && (
-                                                <span className="detalhes" style={{ color: "#2b7fb1" }}>
+                                                <span className="detalhes" style={{ color: "#2b7fb1", fontWeight: "bold" }}>
                                                     Habilidade [{jogador.habilidade.tipo}]: {jogador.habilidade.nome} - {jogador.habilidade.descricao}
                                                 </span>
                                             )}

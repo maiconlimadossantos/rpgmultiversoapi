@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mochilas - RPG Multiverso</title>
+    <style>
+        body {
+            background: linear-gradient(rgba(10, 15, 30, 0.75), rgba(10, 15, 30, 0.90)), 
+                        url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            color: #e2e8f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .painel {
+            background: rgba(255, 255, 255, 0.96);
+            color: #243949;
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 680px;
+            padding: 32px;
+            box-sizing: border-box;
+        }
+        h1 { color: #173d58; margin-bottom: 4px; }
+        .subtitulo { color: #697782; margin-top: 0; }
+        button {
+            background: #2b7fb1;
+            border: 0;
+            border-radius: 7px;
+            color: white;
+            cursor: pointer;
+            margin: 12px 8px 12px 0;
+            padding: 10px 16px;
+            font-weight: bold;
+        }
+        button:hover { background: #1f5d84; }
+        ul { padding-left: 0; list-style: none; }
+        li { 
+            margin: 14px 0; 
+            background: #f8fafc; 
+            padding: 14px; 
+            border-radius: 6px; 
+            border-left: 4px solid #2b7fb1; 
+        }
+        .detalhes { display: block; color: #475569; font-size: 0.9rem; margin-top: 4px; }
+        .voltar { display: inline-block; margin-top: 15px; color: #2b7fb1; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="/bibliotecas/react.development.js"></script>
+    <script src="/bibliotecas/react-dom.development.js"></script>
+    <script src="/bibliotecas/babel.min.js"></script>
+
+    <script type="text/babel" data-presets="react">
+        const { useState } = React;
+
+        function MochilaApp() {
+            const [mochilas, setMochilas] = useState([]);
+            const [mensagem, setMensagem] = useState("");
+
+            async function carregarMochilas() {
+                const user = prompt("Usuário:");
+                const pass = prompt("Senha:");
+                if (!user || !pass) return;
+
+                setMensagem("Carregando mochilas...");
+                try {
+                    const res = await fetch("/mochilas", {
+                        headers: { "Authorization": "Basic " + btoa(user + ":" + pass) }
+                    });
+                    if (!res.ok) throw new Error("Erro ao buscar mochilas");
+                    const dados = await res.json();
+                    setMochilas(dados);
+                    setMensagem("");
+                } catch (err) {
+                    setMensagem("Erro de autenticação ou conexão.");
+                }
+            }
+
+            return (
+                <main className="painel">
+                    <h1>Gerenciamento de Mochilas</h1>
+                    <p className="subtitulo">Controle de inventário e limites de peso</p>
+
+                    <button onClick={carregarMochilas}>Carregar Mochilas</button>
+                    {mensagem && <p><strong>{mensagem}</strong></p>}
+
+                    <ul>
+                        {mochilas.map(m => (
+                            <li key={m.id}>
+                                <strong>Dono: {m.nomeDono}</strong>
+                                <span className="detalhes">Capacidade Máxima: {m.capacidadeMaximaPeso} kg</span>
+                                <span className="detalhes">Itens Guardados: {m.itens ? m.itens.length : 0}</span>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <a className="voltar" href="/">← Voltar para a tela principal</a>
+                </main>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<MochilaApp />);
+    </script>
+</body>
+</html>
