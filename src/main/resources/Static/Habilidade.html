@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habilidades - RPG Multiverso</title>
+    <style>
+        body {
+            /* Fundo com a Yggdrasil cósmica e gradiente escuro */
+            background: linear-gradient(rgba(10, 15, 30, 0.70), rgba(10, 15, 30, 0.85)), 
+                        url('https://thumbs.dreamstime.com/b/yggdrasil-colorido-c%C3%B3smico-%C3%A1rvore-da-vida-na-mitologia-norse-mundial-dos-vikings-ai-generativo-m%C3%ADstica-298088582.jpg?w=992') no-repeat center center fixed;
+            background-size: cover;
+            color: #e2e8f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .painel {
+            background: rgba(255, 255, 255, 0.96);
+            color: #243949;
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 680px;
+            padding: 32px;
+            box-sizing: border-box;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        h1 { color: #173d58; margin-bottom: 4px; }
+        .subtitulo { color: #697782; margin-top: 0; }
+        label { display: block; margin-top: 12px; font-weight: bold; }
+        input {
+            box-sizing: border-box;
+            display: block;
+            margin-top: 4px;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background: #2b7fb1;
+            border: 0;
+            border-radius: 7px;
+            color: white;
+            cursor: pointer;
+            margin: 12px 8px 0 0;
+            padding: 10px 16px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #1f5d84;
+        }
+        button:disabled { opacity: .5; cursor: wait; }
+        ul { padding-left: 0; list-style: none; }
+        li { 
+            margin: 14px 0; 
+            background: #f8fafc; 
+            padding: 14px; 
+            border-radius: 6px; 
+            border-left: 4px solid #2b7fb1; 
+        }
+        .detalhes { display: block; color: #475569; font-size: 0.9rem; margin-top: 3px; }
+        .mensagem { color: #9d3a28; font-weight: bold; margin-top: 10px; }
+        .voltar { display: inline-block; margin-top: 15px; color: #2b7fb1; text-decoration: none; font-weight: bold; }
+        @media (max-width: 720px) {
+            .painel { margin: 12px; padding: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Bibliotecas React, ReactDOM e Babel -->
+    <script src="/bibliotecas/react.development.js"></script>
+    <script src="/bibliotecas/react-dom.development.js"></script>
+    <script src="/bibliotecas/babel.min.js"></script>
+
+    <script type="text/babel" data-presets="react">
+        const { useState } = React;
+
+        function HabilidadeApp() {
+            const [usuario, setUsuario] = useState("");
+            const [senha, setSenha] = useState("");
+            const [autorizacao, setAutorizacao] = useState("");
+            const [habilidades, setHabilidades] = useState([]);
+            const [mensagem, setMensagem] = useState("");
+            const [carregando, setCarregando] = useState(false);
+
+            async function consultarHabilidades(cabecalho) {
+                setCarregando(true);
+                setMensagem("Consultando habilidades na API...");
+
+                try {
+                    // Endpoint correspondente para buscar habilidades ou jogadores com habilidades
+                    const resposta = await fetch("/habilidades", {
+                        headers: {
+                            Authorization: cabecalho,
+                            Accept: "application/json",
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    });
+
+                    if (resposta.status === 401) {
+                        setMensagem("Usuário ou senha incorretos.");
+                        setHabilidades([]);
+                        return false;
+                    }
+
+                    if (!resposta.ok) {
+                        setMensagem("Erro HTTP " + resposta.status);
+                        return false;
+                    }
+
+                    const dados = await resposta.json();
+                    setHabilidades(dados);
+                    setMensagem("");
+                    return true;
+                } catch (erro) {
+                    setMensagem("Não foi possível acessar a API de habilidades.");
+                    return false;
+                } finally {
+                    setCarregando(false);
+                }
+            }
+
+            async function entrar(evento) {
+                evento.preventDefault();
+                if (!usuario || !senha) {
+                    setMensagem("Preencha usuário e senha.");
+                    return;
+                }
+
+                const cabecalho = "Basic " + btoa(usuario + ":" + senha);
+                const sucesso = await consultarHabilidades(cabecalho);
+
+                if (sucesso) {
+                    setAutorizacao(cabecalho);
+                    setSenha("");
+                }
+            }
+
+            function sair() {
+                setAutorizacao("");
+                setUsuario("");
+                setSenha("");
+                setHabilidades([]);
+                setMensagem("");
+            }
+
+            return (
+                <main className="painel">
+                    <h1>Gerenciamento de Habilidades</h1>
+                    <p className="subtitulo">Poderes por Geração (Sobrevivência, Classe e Clã)</p>
+
+                    {!autorizacao ? (
+                        <form onSubmit={entrar}>
+                            <label>Usuário
+                                <input value={usuario}
+                                    onChange={e => setUsuario(e.target.value)}
+                                    autoComplete="username" />
+                            </label>
+
+                            <label>Senha
+                                <input type="password" value={senha}
+                                    onChange={e => setSenha(e.target.value)}
+                                    autoComplete="current-password" />
+                            </label>
+                            <button disabled={carregando} type="submit">Entrar</button>
+                        </form>
+                    ) : (
+                        <section>
+                            <h2>Habilidades Cadastradas</h2>
+                            <button disabled={carregando}
+                                onClick={() => consultarHabilidades(autorizacao)}>
+                                Atualizar lista
+                            </button>
+                            <button onClick={sair}>Sair da tela</button>
+
+                            {habilidades.length === 0 ? (
+                                <p style={{marginTop: "15px"}}>Nenhuma habilidade encontrada.</p>
+                            ) : (
+                                <ul>
+                                    {habilidades.map(hab => (
+                                        <li key={hab.id}>
+                                            <strong>{hab.nome}</strong> 
+                                            <span className="detalhes" style={{ color: "#2b7fb1", fontWeight: "bold" }}>
+                                                Tipo: [{hab.tipo}]
+                                            </span>
+                                            <span className="detalhes">
+                                                Descrição: {hab.descricao}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </section>
+                    )}
+                    {mensagem && <p className="mensagem">{mensagem}</p>}
+                    <a className="voltar" href="/">← Voltar para a tela principal</a>
+                </main>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<HabilidadeApp />);
+    </script>
+</body>
+</html>

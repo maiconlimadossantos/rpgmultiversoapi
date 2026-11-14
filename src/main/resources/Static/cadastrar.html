@@ -6,8 +6,9 @@
     <title>Cadastrar Jogador - RPG Multiverso</title>
     <style>
         body {
-            background: linear-gradient(rgba(10, 15, 30, 0.75), rgba(10, 15, 30, 0.90)), 
-                        url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+            /* Fundo com a Yggdrasil cósmica e gradiente escuro */
+            background: linear-gradient(rgba(10, 15, 30, 0.70), rgba(10, 15, 30, 0.85)), 
+                        url('https://thumbs.dreamstime.com/b/yggdrasil-colorido-c%C3%B3smico-%C3%A1rvore-da-vida-na-mitologia-norse-mundial-dos-vikings-ai-generativo-m%C3%ADstica-298088582.jpg?w=992') no-repeat center center fixed;
             background-size: cover;
             color: #e2e8f0;
             font-family: Arial, sans-serif;
@@ -26,6 +27,8 @@
             max-width: 500px;
             padding: 32px;
             box-sizing: border-box;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         h1 { color: #173d58; margin-bottom: 4px; }
         .subtitulo { color: #697782; margin-top: 0; margin-bottom: 20px; }
@@ -51,6 +54,7 @@
             font-weight: bold;
             width: 100%;
             font-size: 1rem;
+            transition: background 0.2s;
         }
         button:hover { background: #1f5d84; }
         .mensagem { margin-top: 12px; font-weight: bold; text-align: center; }
